@@ -3,336 +3,172 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>超炫跳一跳 | 10关完整版</title>
+<title>可玩版·跳一跳</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <script>
-tailwind.config = {
-theme: {
-extend: {
-colors: {
-neon: '#7e22ce',
-neon2: '#4f46e5',
-neon3: '#06b6d4',
-neonglow: '#a855f7',
-darkbg: '#0f172a',
-}
-}
-}
-}
+tailwind.config={theme:{extend:{colors:{neon:'#7e22ce',neon2:'#4f46e5',neon3:'#06b6d4',neonglow:'#a855f7',darkbg:'#0f172a'}}}}
 </script>
 <style type="text/tailwindcss">
-@layer utilities {
-body {
-background: radial-gradient(circle at top, #1e1b4b, #0f172a);
-}
-.glow {
-box-shadow: 0 0 15px rgba(168,85,247,0.6), 0 0 30px rgba(79,70,229,0.4);
-}
-.btn-neon {
-background: linear-gradient(90deg,#4f46e5,#7e22ce,#06b6d4);
-background-size: 200% 200%;
-animation: gradient 3s ease infinite;
-}
-@keyframes gradient {
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
-}
-.card-glass {
-background: rgba(30,27,75,0.7);
-backdrop-filter:blur(12px);
-border:1px solid rgba(255,255,255,0.1);
-}
-.pulse-glow {
-animation: pulse 2s infinite;
-}
-@keyframes pulse {
-0%{box-shadow:0 0 10px rgba(168,85,247,0.4)}
-50%{box-shadow:0 0 25px rgba(168,85,247,0.7)}
-100%{box-shadow:0 0 10px rgba(168,85,247,0.4)}
-}
-.slide-in {
-animation: slideIn 0.5s ease forwards;
-}
-@keyframes slideIn {
-from{opacity:0;transform:translateY(20px)}
-to{opacity:1;transform:translateY(0)}
-}
+@layer utilities{
+body{background:radial-gradient(circle at top,#1e1b4b,#0f172a)}
+.glow{box-shadow:0 0 15px rgba(168,85,247,0.6),0 0 30px rgba(79,70,229,0.4)}
+.btn-neon{background:linear-gradient(90deg,#4f46e5,#7e22ce,#06b6d4);background-size:200% 200%;animation:gradient 3s ease infinite}
+@keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.card-glass{background:rgba(30,27,75,0.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1)}
+.pulse-glow{animation:pulse 2s infinite}@keyframes pulse{0%{box-shadow:0 0 10px rgba(168,85,247,0.4)}50%{box-shadow:0 0 25px rgba(168,85,247,0.7)}100%{box-shadow:0 0 10px rgba(168,85,247,0.4)}}
+.slide-in{animation:slideIn 0.5s ease forwards}@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 }
 </style>
 </head>
 <body class="text-white min-h-screen">
 
-<!-- 导航 -->
 <nav class="fixed top-0 w-full card-glass z-50 px-4 py-3">
 <div class="max-w-7xl mx-auto flex justify-between items-center">
-<div class="text-xl md:text-2xl font-bold text-neonglow">
-<i class="fa fa-rocket mr-2"></i>超炫跳一跳
-</div>
-<div class="flex gap-2 md:gap-4 text-sm md:text-base">
-<button onclick="go('home')" class="px-3 py-1 hover:text-neonglow transition">首页</button>
-<button onclick="go('game')" class="px-3 py-1 hover:text-neonglow transition">开始游戏</button>
-<button onclick="go('levels')" class="px-3 py-1 hover:text-neonglow transition">关卡</button>
-<button onclick="go('about')" class="px-3 py-1 hover:text-neonglow transition">关于</button>
+<div class="text-xl font-bold text-neonglow"><i class="fa fa-rocket mr-1"></i>跳一跳</div>
+<div class="flex gap-3 text-sm">
+<button onclick="go('home')" class="px-2 hover:text-neonglow">首页</button>
+<button onclick="go('game')" class="px-2 hover:text-neonglow">游戏</button>
+<button onclick="go('levels')" class="px-2 hover:text-neonglow">关卡</button>
+<button onclick="go('about')" class="px-2 hover:text-neonglow">关于</button>
 </div>
 </div>
 </nav>
 
-<!-- 页面容器 -->
 <main class="pt-20 pb-10 max-w-7xl mx-auto px-4">
-<!-- 首页 -->
 <section id="home" class="page block">
 <div class="min-h-[80vh] flex flex-col justify-center items-center text-center slide-in">
-<h1 class="text-4xl md:text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-neon3 via-neon to-neon2">
-超炫跳一跳
-</h1>
-<p class="text-lg md:text-xl mb-8 max-w-xl text-gray-300">
-按住蓄力、松开跳跃，挑战10大关卡，体验极致霓虹特效
-</p>
-<button onclick="startGame(1)" class="btn-neon text-white px-8 py-4 rounded-xl text-xl font-semibold glow hover:scale-105 active:scale-95 transition">
-<i class="fa fa-play mr-2"></i>开始游戏
+<h1 class="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-neon3 via-neon to-neon2">超炫跳一跳</h1>
+<p class="mb-8 text-gray-300">按住蓄力，松开跳跃，挑战10关</p>
+<button onclick="startGame(1)" class="btn-neon px-8 py-4 rounded-xl text-white glow hover:scale-105 active:scale-95">
+<i class="fa fa-play mr-1"></i>开始游戏
 </button>
-<button onclick="go('levels')" class="mt-4 card-glass px-6 py-3 rounded-xl hover:text-neonglow transition">
-选择关卡
-</button>
+<button onclick="go('levels')" class="mt-4 card-glass px-6 py-3 rounded-xl hover:text-neonglow">选择关卡</button>
 <div class="mt-10 card-glass p-6 rounded-2xl w-full max-w-xl">
-<h3 class="text-xl font-semibold mb-3"><i class="fa fa-gamepad mr-2"></i>游戏玩法</h3>
-<p class="mb-2">• 按住按钮蓄力，蓄力越远跳得越远</p>
-<p class="mb-2">• 松开跳跃，成功落在平台即可通关</p>
-<p>• 共10个关卡，难度逐步提升</p>
+<h3 class="text-xl mb-3"><i class="fa fa-gamepad mr-1"></i>玩法</h3>
+<p>• 按住按钮蓄力</p>
+<p>• 松开跳跃到下一个平台</p>
+<p>• 10个关卡，难度逐步提升</p>
 </div>
 </div>
 </section>
 
-<!-- 游戏页面 -->
 <section id="game" class="page hidden">
-<div class="mt-4 md:mt-10 slide-in">
+<div class="slide-in">
 <div class="flex justify-between items-center mb-4">
-<h2 class="text-2xl md:text-3xl font-bold text-neonglow">
-第 <span id="nowLv">1</span> 关
-</h2>
-<div class="card-glass px-4 py-2 rounded-xl">
-已解锁: <span id="maxLv">1</span> 关
+<h2 class="text-2xl font-bold text-neonglow">第 <span id="nowLv">1</span> 关</h2>
+<div class="card-glass px-4 py-2 rounded-xl">已解锁: <span id="maxLv">1</span> 关</div>
 </div>
-</div>
-<div class="card-glass p-4 rounded-2xl relative overflow-hidden">
+<div class="card-glass p-4 rounded-2xl relative">
 <canvas id="gameCanvas" width="800" height="400" class="w-full rounded-lg bg-darkbg/80"></canvas>
-<!-- 蓄力条 -->
-<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-52 md:w-72 h-4 bg-white/10 rounded-full overflow-hidden">
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-60 h-4 bg-white/10 rounded-full overflow-hidden">
 <div id="powerBar" class="h-full btn-neon w-0 transition-all"></div>
 </div>
-<!-- 跳跃按钮 -->
-<button id="jumpBtn" class="absolute bottom-6 right-6 btn-neon text-white px-6 py-3 rounded-xl pulse-glow">
-按住跳跃
-</button>
+<button id="jumpBtn" class="absolute bottom-6 right-6 btn-neon text-white px-6 py-3 rounded-xl pulse-glow">按住跳跃</button>
 </div>
 <div class="flex gap-3 mt-4 justify-center">
-<button onclick="resetGame()" class="card-glass px-4 py-2 rounded-xl hover:text-neonglow">
-重新开始
-</button>
-<button onclick="go('levels')" class="card-glass px-4 py-2 rounded-xl hover:text-neonglow">
-返回关卡
-</button>
+<button onclick="resetGame()" class="card-glass px-4 py-2 rounded-xl hover:text-neonglow">重新开始</button>
+<button onclick="go('levels')" class="card-glass px-4 py-2 rounded-xl hover:text-neonglow">返回关卡</button>
 </div>
 </div>
 </section>
 
-<!-- 关卡选择 -->
-<section id="levels" class="page hidden py-4 slide-in">
+<section id="levels" class="page hidden slide-in">
 <h2 class="text-3xl font-bold text-center mb-8 text-neonglow">关卡选择</h2>
 <div id="levelBox" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-w-3xl mx-auto"></div>
-<button onclick="go('home')" class="mx-auto mt-8 card-glass px-6 py-3 rounded-xl hover:text-neonglow">
-返回首页
-</button>
+<button onclick="go('home')" class="mx-auto mt-8 card-glass px-6 py-3 rounded-xl hover:text-neonglow">返回首页</button>
 </section>
 
-<!-- 关于 -->
 <section id="about" class="page hidden slide-in">
 <div class="min-h-[70vh] flex flex-col justify-center items-center">
 <div class="card-glass p-8 rounded-2xl max-w-xl w-full text-center">
 <h2 class="text-3xl font-bold mb-6 text-neonglow">关于游戏</h2>
-<p class="mb-4">炫酷霓虹风格跳一跳小游戏</p>
-<p class="mb-4">10个关卡 | 蓄力跳跃 | 科技视觉</p>
-<p class="text-gray-400">© 2026 超炫跳一跳</p>
+<p>炫酷霓虹风格跳一跳</p>
+<p>10关卡 | 蓄力跳跃 | 科技视觉</p>
+<p class="text-gray-400 mt-4">© 2026 跳一跳</p>
 </div>
-<button onclick="go('home')" class="mt-6 card-glass px-6 py-3 rounded-xl hover:text-neonglow">
-返回首页
-</button>
+<button onclick="go('home')" class="mt-6 card-glass px-6 py-3 rounded-xl hover:text-neonglow">返回首页</button>
 </div>
 </section>
 
-<!-- 通关 -->
 <section id="win" class="page hidden fixed inset-0 bg-black/80 flex justify-center items-center z-50">
 <div class="card-glass p-10 rounded-2xl text-center slide-in">
 <h2 class="text-4xl font-bold text-neon3 mb-4">恭喜通关！</h2>
 <p class="text-xl mb-6">你完成了全部10个关卡！</p>
-<button onclick="restartAll()" class="btn-neon px-8 py-4 rounded-xl text-white">
-重新挑战
-</button>
+<button onclick="restartAll()" class="btn-neon px-8 py-4 rounded-xl text-white">重新挑战</button>
 </div>
 </section>
 </main>
 
 <script>
-// 全局
-let nowLv = 1
-let maxLv = 1
-let isJump = false
-let power = 0
-let powerTimer
-let canvas, ctx
-let player = {x:100, y:300, w:30, h:30}
-let platforms = []
+let nowLv=1,maxLv=1,isJump=false,power=0,powerTimer,canvas,ctx
+let player={x:100,y:300,w:30,h:30},platforms=[]
 
-// 页面切换
-function go(id){
-document.querySelectorAll('.page').forEach(e=>e.classList.add('hidden'))
-document.getElementById(id).classList.remove('hidden')
-}
+function go(id){document.querySelectorAll('.page').forEach(e=>e.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
 
-// 关卡列表
 function makeLevels(){
-let box = document.getElementById('levelBox')
-box.innerHTML = ''
+let box=document.getElementById('levelBox');box.innerHTML=''
 for(let i=1;i<=10;i++){
-let btn = document.createElement('button')
-btn.className = `h-20 rounded-xl text-lg font-semibold transition ${
-i<=maxLv ? 'btn-neon glow' : 'bg-white/10 text-gray-500'
-}`
-btn.innerText = `第${i}关`
-if(i<=maxLv) btn.onclick = ()=>startGame(i)
+let btn=document.createElement('button')
+btn.className=`h-20 rounded-xl text-lg font-semibold transition ${i<=maxLv?'btn-neon glow':'bg-white/10 text-gray-500'}`
+btn.innerText=`第${i}关`
+if(i<=maxLv)btn.onclick=()=>startGame(i)
 box.appendChild(btn)
 }
 }
 
-// 开始游戏
-function startGame(lv){
-nowLv = lv
-document.getElementById('nowLv').innerText = lv
-go('game')
-initGame()
-draw()
-}
+function startGame(lv){nowLv=lv;document.getElementById('nowLv').innerText=lv;go('game');initGame();draw()}
 
-// 初始化场景
 function initGame(){
-canvas = document.getElementById('gameCanvas')
-ctx = canvas.getContext('2d')
-player.x = 100
-player.y = 300
-platforms = []
-let gap = 160 + nowLv * 25
-platforms.push({x:50, y:330, w:140, h:30})
-platforms.push({x:50+gap, y:330, w:140, h:30})
-isJump = false
-power = 0
-updateBar()
+canvas=document.getElementById('gameCanvas');ctx=canvas.getContext('2d')
+player.x=100;player.y=300;platforms=[]
+let gap=160+nowLv*25
+platforms.push({x:50,y:330,w:140,h:30})
+platforms.push({x:50+gap,y:330,w:140,h:30})
+isJump=false;power=0;updateBar()
 }
 
-// 绘制
 function draw(){
 ctx.clearRect(0,0,canvas.width,canvas.height)
-// 平台
-ctx.fillStyle = '#10b981'
-platforms.forEach(p=>ctx.fillRect(p.x,p.y,p.w,p.h))
-// 角色
-ctx.fillStyle = '#a855f7'
-ctx.fillRect(player.x,player.y,player.w,player.h)
+ctx.fillStyle='#10b981';platforms.forEach(p=>ctx.fillRect(p.x,p.y,p.w,p.h))
+ctx.fillStyle='#a855f7';ctx.fillRect(player.x,player.y,player.w,player.h)
 }
 
-// 蓄力
-const jumpBtn = document.getElementById('jumpBtn')
+const jumpBtn=document.getElementById('jumpBtn')
 jumpBtn.addEventListener('mousedown',startPower)
 jumpBtn.addEventListener('mouseup',doJump)
 jumpBtn.addEventListener('touchstart',startPower)
 jumpBtn.addEventListener('touchend',doJump)
 
-function startPower(){
-if(isJump) return
-powerTimer = setInterval(()=>{
-power = Math.min(power+2,100)
-updateBar()
-},20)
-}
+function startPower(){if(isJump)return;powerTimer=setInterval(()=>{power=Math.min(power+2,100);updateBar()},20)}
+function updateBar(){document.getElementById('powerBar').style.width=power+'%'}
 
-function updateBar(){
-document.getElementById('powerBar').style.width = power+'%'
-}
-
-// 跳跃
 function doJump(){
-clearInterval(powerTimer)
-if(isJump || power===0) return
-isJump = true
-let jumpDis = power * 3.5
-let startX = player.x
-let t = 0
-let jmp = setInterval(()=>{
-t += 0.05
-player.x = startX + jumpDis * t
-player.y = 300 - Math.sin(t*Math.PI) * 110
-draw()
-if(t>=1){
-clearInterval(jmp)
-player.y = 300
-checkResult()
-isJump = false
-power = 0
-updateBar()
-}
+clearInterval(powerTimer);if(isJump||power===0)return
+isJump=true;let jumpDis=power*3.5;let startX=player.x;let t=0
+let jmp=setInterval(()=>{
+t+=0.05;player.x=startX+jumpDis*t;player.y=300-Math.sin(t*Math.PI)*110;draw()
+if(t>=1){clearInterval(jmp);player.y=300;checkResult();isJump=false;power=0;updateBar()}
 },20)
 }
 
-// 判断成功/失败
 function checkResult(){
-let tar = platforms[1]
-if(player.x+player.w>tar.x && player.x<tar.x+tar.w){
-if(nowLv>=maxLv){
-maxLv = nowLv+1
-localStorage.setItem('maxLv',maxLv)
-document.getElementById('maxLv').innerText = maxLv
-}
-if(nowLv===10){
-setTimeout(()=>go('win'),600)
-return
-}
-setTimeout(()=>{
-alert('通关成功！进入下一关')
-startGame(nowLv+1)
-},500)
-} else {
-setTimeout(()=>{
-alert('挑战失败，重新开始')
-initGame()
-draw()
-},400)
+let tar=platforms[1]
+if(player.x+player.w>tar.x&&player.x<tar.x+tar.w){
+if(nowLv>=maxLv){maxLv=nowLv+1;localStorage.setItem('maxLv',maxLv);document.getElementById('maxLv').innerText=maxLv}
+if(nowLv===10){setTimeout(()=>go('win'),600);return}
+setTimeout(()=>{alert('通关成功！进入下一关');startGame(nowLv+1)},500)
+}else{
+setTimeout(()=>{alert('挑战失败，重新开始');initGame();draw()},400)
 }
 }
 
-// 重置
-function resetGame(){
-initGame()
-draw()
-}
+function resetGame(){initGame();draw()}
+function restartAll(){nowLv=1;maxLv=1;localStorage.setItem('maxLv',1);document.getElementById('maxLv').innerText=1;go('home');makeLevels()}
 
-// 重新开始
-function restartAll(){
-nowLv = 1
-maxLv = 1
-localStorage.setItem('maxLv',1)
-document.getElementById('maxLv').innerText = 1
-go('home')
-makeLevels()
-}
-
-// 加载
-window.onload = function(){
-let save = localStorage.getItem('maxLv')
-if(save) maxLv = parseInt(save)
-document.getElementById('maxLv').innerText = maxLv
-makeLevels()
-go('home')
+window.onload=function(){
+let save=localStorage.getItem('maxLv');if(save)maxLv=parseInt(save)
+document.getElementById('maxLv').innerText=maxLv;makeLevels();go('home')
 }
 </script>
 </body>
