@@ -1,336 +1,168 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D 跳一跳</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-
-        body {
-            overflow: hidden;
-            background: #1a1a2e;
-            font-family: Arial, sans-serif;
-        }
-
-        #game {
-            width: 100vw;
-            height: 100vh;
-            display: block;
-        }
-
-        /* UI 界面 */
-        .ui {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px;
-            color: white;
-            z-index: 100;
-        }
-
-        .score {
-            font-size: 32px;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-
-        .power-bar {
-            position: fixed;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 10px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .power-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4facfe, #00f2fe);
-            width: 0%;
-            transition: width 0.05s;
-        }
-
-        .tips {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .game-over {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-            text-align: center;
-            display: none;
-            text-shadow: 0 0 20px red;
-        }
-
-        .restart {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 18px;
-            background: #ff4757;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D跳一跳</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none}
+body{overflow:hidden;background:#121220}
+canvas{display:block;width:100vw;height:100vh}
+.score{position:fixed;top:20px;left:20px;color:#fff;font-size:30px;font-weight:bold;text-shadow:0 0 10px #fff;z-index:10}
+.power-bar{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);width:260px;height:14px;background:rgba(255,255,255,.15);border-radius:7px;overflow:hidden;z-index:10}
+.power{height:100%;background:linear-gradient(90deg,#54a0ff,#00d2d3);width:0%;transition:width 0.04s}
+.tips{position:fixed;bottom:90px;left:50%;color:rgba(255,255,255,.7);font-size:14px;z-index:10}
+.over{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:42px;font-weight:bold;text-align:center;display:none;text-shadow:0 0 20px red;z-index:20}
+.restart{margin-top:20px;padding:12px 26px;background:#ff4757;border:none;color:#fff;border-radius:6px;font-size:18px;cursor-pointer}
+</style>
 </head>
 <body>
-    <canvas id="game"></canvas>
+<div class="score">0</div>
+<div class="tips">长按蓄力 · 松开跳跃</div>
+<div class="power-bar"><div class="power"></div></div>
+<div class="over">游戏结束<br><button class="restart">再来一局</button></div>
 
-    <!-- UI -->
-    <div class="ui">
-        <div class="score">分数: 0</div>
-    </div>
-    <div class="tips">长按蓄力，松开跳跃</div>
-    <div class="power-bar">
-        <div class="power-fill"></div>
-    </div>
-    <div class="game-over">
-        游戏结束
-        <br>
-        <button class="restart">重新开始</button>
-    </div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 2000);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+document.body.appendChild(renderer.domElement);
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled = true;
+scene.background = new THREE.Color(0x121220);
 
-    <!-- Three.js -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-    <script>
-        // ========== 游戏基础配置 ==========
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('#game'), antialias: true });
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(10,20,10);
+light.castShadow = true;
+scene.add(light, new THREE.AmbientLight(0xffffff, 0.5));
+
+let player;
+let platforms = [];
+let score = 0;
+let isCharging = false;
+let power = 0;
+const maxPower = 100;
+let isJumping = false;
+let current = 0;
+
+// ========== 3D小人（替换丑豆子！） ==========
+function createPlayer() {
+    player = new THREE.Group();
+    scene.add(player);
+
+    // 身体
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff6b6b });
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.35, 0.8, 6), bodyMat);
+    body.position.y = 0.4;
+    body.castShadow = true;
+    
+    // 头
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 6), bodyMat);
+    head.position.y = 1.1;
+    head.castShadow = true;
+
+    player.add(body, head);
+    player.position.set(0, 0, 0);
+}
+
+// ========== 生成难度递增平台 ==========
+function createPlatforms() {
+    platforms.forEach(p => scene.remove(p));
+    platforms = [];
+    let x = 0, z = 0;
+    for (let i = 0; i < 80; i++) {
+        const base = 2.3 + Math.min(score * 0.07, 2.5);
+        const dist = base + Math.random() * 2.5;
+        x += dist;
+        z += (Math.random() - 0.5) * (1 + Math.min(score * 0.04, 1.5));
         
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        scene.background = new THREE.Color(0x1a1a2e);
+        const mat = new THREE.MeshStandardMaterial({ color: i%2 ? 0x48dbfb : 0x00d2d3 });
+        const p = new THREE.Mesh(new THREE.BoxGeometry(2, 0.5, 2), mat);
+        p.position.set(x, 0, z);
+        p.receiveShadow = true;
+        scene.add(p);
+        platforms.push(p);
+    }
+    player.position.copy(platforms[0].position).y += 1;
+    current = 0;
+    updateScore();
+}
 
-        // 灯光
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(10, 20, 10);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
-        scene.add(directionalLight);
+function updateScore() { document.querySelector('.score').innerText = score }
+function updatePower() { document.querySelector('.power').style.width = (power / maxPower * 100) + '%' }
 
-        // ========== 游戏变量 ==========
-        let score = 0;
-        let isJumping = false;
-        let isCharging = false;
-        let chargePower = 0;
-        const maxCharge = 100;
-        let player;
-        let platforms = [];
-        let currentPlatformIndex = 0;
+// ========== 丝滑抛物线跳跃（无卡顿！） ==========
+function jump() {
+    if (isJumping || !platforms[current + 1]) return;
+    isJumping = true;
+    const jumpPower = power * 0.085;
+    power = 0; updatePower();
 
-        // ========== 创建角色 ==========
-        function createPlayer() {
-            const geometry = new THREE.CapsuleGeometry(0.3, 0.8, 4, 8);
-            const material = new THREE.MeshStandardMaterial({ color: 0xff6b6b });
-            player = new THREE.Mesh(geometry, material);
-            player.castShadow = true;
-            player.position.set(0, 1, 0);
-            scene.add(player);
+    const start = player.position.clone();
+    const target = platforms[current + 1];
+    const dir = target.position.clone().sub(start).normalize();
+    const end = start.clone().add(dir.multiplyScalar(jumpPower));
+    end.y = 1;
+
+    let t = 0;
+    const h = 3.3;
+
+    function animateJump() {
+        if (t > 1) {
+            player.position.copy(end);
+            if (player.position.distanceTo(target.position) < 1.6) {
+                score++; current++; isJumping = false; updateScore();
+            } else { gameOver() }
+            return;
         }
 
-        // ========== 创建平台（长关卡 · 无限生成） ==========
-        function createPlatforms() {
-            // 清空旧平台
-            platforms.forEach(p => scene.remove(p));
-            platforms = [];
+        t += 0.018;
+        player.position.lerpVectors(start, end, t);
+        player.position.y = start.y + Math.sin(Math.PI * t) * h;
+        requestAnimationFrame(animateJump);
+    }
+    animateJump();
+}
 
-            // 生成连续长关卡平台
-            let x = 0;
-            let z = 0;
-            for (let i = 0; i < 50; i++) { // 50个超长关卡
-                const geometry = new THREE.BoxGeometry(2, 0.5, 2);
-                const material = new THREE.MeshStandardMaterial({
-                    color: i % 2 === 0 ? 0x4ecdc4 : 0x45b7d1
-                });
-                const platform = new THREE.Mesh(geometry, material);
-                platform.receiveShadow = true;
-                
-                // 随机位置
-                x += (Math.random() * 3 + 2);
-                z += (Math.random() - 0.5) * 2;
+function gameOver() { isJumping = true; document.querySelector('.over').style.display = "block" }
+function reset() {
+    score = power = current = 0;
+    isJumping = isCharging = false;
+    updatePower();
+    document.querySelector('.over').style.display = "none";
+    createPlatforms();
+}
 
-                platform.position.set(x, 0, z);
-                scene.add(platform);
-                platforms.push(platform);
-            }
+// 操作
+window.addEventListener('mousedown', () => { if (!isJumping) isCharging = true });
+window.addEventListener('mouseup', () => { if (isCharging) { isCharging = false; jump() } });
+window.addEventListener('touchstart', e => e.preventDefault());
+window.addEventListener('touchstart', () => { if (!isJumping) isCharging = true });
+window.addEventListener('touchend', () => { if (isCharging) { isCharging = false; jump() } });
+document.querySelector('.restart').onclick = reset;
 
-            // 重置角色位置
-            player.position.copy(platforms[0].position).add(new THREE.Vector3(0, 1, 0));
-            currentPlatformIndex = 0;
-        }
+// 主循环
+function loop() {
+    requestAnimationFrame(loop);
+    if (isCharging && power < maxPower) { power += 1.3; updatePower() }
+    if (platforms[current]) {
+        const pos = platforms[current].position;
+        camera.position.lerp(new THREE.Vector3(pos.x - 8, 6, pos.z - 8), 0.09);
+        camera.lookAt(pos);
+    }
+    renderer.render(scene, camera);
+}
 
-        // ========== 相机跟随 ==========
-        function updateCamera() {
-            const targetPos = platforms[currentPlatformIndex].position;
-            camera.position.lerp(
-                new THREE.Vector3(targetPos.x - 8, 6, targetPos.z - 8),
-                0.05
-            );
-            camera.lookAt(targetPos);
-        }
+createPlayer();
+createPlatforms();
+loop();
 
-        // ========== 跳跃逻辑 ==========
-        function jump() {
-            if (isJumping || !player) return;
-            isJumping = true;
-
-            const jumpForce = chargePower * 0.1;
-            const targetPlatform = platforms[currentPlatformIndex + 1];
-            if (!targetPlatform) {
-                showGameOver();
-                return;
-            }
-
-            // 跳跃动画
-            const startPos = player.position.clone();
-            const endPos = targetPlatform.position.clone().add(new THREE.Vector3(0, 1, 0));
-            const jumpHeight = 3;
-            let progress = 0;
-
-            const jumpAnim = setInterval(() => {
-                progress += 0.03;
-                if (progress > 1) {
-                    clearInterval(jumpAnim);
-                    player.position.copy(endPos);
-                    
-                    // 判断是否成功落地
-                    const dist = player.position.distanceTo(endPos);
-                    if (dist < 1) {
-                        score++;
-                        updateScore();
-                        currentPlatformIndex++;
-                        isJumping = false;
-                    } else {
-                        showGameOver();
-                    }
-                    return;
-                }
-
-                // 抛物线跳跃
-                const x = THREE.MathUtils.lerp(startPos.x, endPos.x, progress);
-                const y = startPos.y + Math.sin(Math.PI * progress) * jumpHeight;
-                const z = THREE.MathUtils.lerp(startPos.z, endPos.z, progress);
-                player.position.set(x, y, z);
-            }, 16);
-        }
-
-        // ========== UI 更新 ==========
-        function updateScore() {
-            document.querySelector('.score').textContent = `分数: ${score}`;
-        }
-
-        function updatePowerBar() {
-            document.querySelector('.power-fill').style.width = `${(chargePower / maxCharge) * 100}%`;
-        }
-
-        function showGameOver() {
-            isJumping = true;
-            document.querySelector('.game-over').style.display = 'block';
-        }
-
-        // ========== 游戏重置 ==========
-        function resetGame() {
-            score = 0;
-            isJumping = false;
-            isCharging = false;
-            chargePower = 0;
-            updateScore();
-            updatePowerBar();
-            document.querySelector('.game-over').style.display = 'none';
-            createPlatforms();
-        }
-
-        // ========== 输入控制 ==========
-        // 长按蓄力
-        window.addEventListener('mousedown', () => {
-            if (isJumping) return;
-            isCharging = true;
-            chargePower = 0;
-        });
-
-        window.addEventListener('mouseup', () => {
-            if (isCharging && !isJumping) {
-                isCharging = false;
-                jump();
-                chargePower = 0;
-                updatePowerBar();
-            }
-        });
-
-        // 移动端触摸
-        window.addEventListener('touchstart', (e) => e.preventDefault());
-        window.addEventListener('touchstart', () => {
-            if (isJumping) return;
-            isCharging = true;
-            chargePower = 0;
-        });
-        window.addEventListener('touchend', () => {
-            if (isCharging && !isJumping) {
-                isCharging = false;
-                jump();
-                chargePower = 0;
-                updatePowerBar();
-            }
-        });
-
-        // 蓄力增长
-        function chargeLoop() {
-            if (isCharging && chargePower < maxCharge) {
-                chargePower += 2;
-                updatePowerBar();
-            }
-            requestAnimationFrame(chargeLoop);
-        }
-        chargeLoop();
-
-        // 重启按钮
-        document.querySelector('.restart').addEventListener('click', resetGame);
-
-        // 窗口适配
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // ========== 启动游戏 ==========
-        createPlayer();
-        createPlatforms();
-
-        // ========== 主循环 ==========
-        function animate() {
-            requestAnimationFrame(animate);
-            updateCamera();
-            renderer.render(scene, camera);
-        }
-        animate();
-    </script>
+window.onresize = () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+}
+</script>
 </body>
 </html>
