@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>跳一跳</title>
+    <style>
+        body { background: #111; color: white; text-align: center; }
+        #game { width: 100%; max-width: 400px; height: 500px; background: #222; margin: 20px auto; position: relative; }
+        #player { width: 30px; height: 30px; background: #0ff; position: absolute; bottom: 100px; left: 50px; }
+        #platform { width: 100px; height: 20px; background: #f80; position: absolute; bottom: 100px; left: 40px; }
+        #jumpBtn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 120px; height: 40px; background: red; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <h1>跳一跳</h1>
+    <div id="game">
+        <div id="player"></div>
+        <div id="platform"></div>
+        <button id="jumpBtn">按住跳跃</button>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const btn = document.getElementById('jumpBtn');
+        let power = 0;
+        let isJumping = false;
+
+        btn.addEventListener('mousedown', startPower);
+        btn.addEventListener('mouseup', jump);
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); startPower(); });
+        btn.addEventListener('touchend', (e) => { e.preventDefault(); jump(); });
+
+        function startPower() {
+            if (isJumping) return;
+            power = 0;
+            const interval = setInterval(() => {
+                power = Math.min(power + 2, 100);
+            }, 20);
+            setTimeout(() => clearInterval(interval), 2000); // 防止长按过久
+        }
+
+        function jump() {
+            if (isJumping || power === 0) return;
+            isJumping = true;
+            const startX = parseInt(player.style.left);
+            let time = 0;
+            const jumpInterval = setInterval(() => {
+                time += 0.05;
+                player.style.left = startX + power * 2 * time + 'px';
+                const y = Math.sin(time * Math.PI) * 80;
+                player.style.bottom = 100 - y + 'px';
+                if (time >= 1) {
+                    clearInterval(jumpInterval);
+                    player.style.bottom = '100px';
+                    checkWin();
+                    isJumping = false;
+                }
+            }, 20);
+        }
+
+        function checkWin() {
+            const platform = document.getElementById('platform');
+            const playerRect = player.getBoundingClientRect();
+            const platformRect = platform.getBoundingClientRect();
+            if (playerRect.right > platformRect.left && playerRect.left < platformRect.right) {
+                alert('过关成功！');
+                platform.style.left = (parseInt(platform.style.left) + 200) + 'px'; // 下一关
+            } else {
+                alert('掉下去了！');
+                player.style.left = '50px';
+            }
+        }
+    </script>
+</body>
+</html>
